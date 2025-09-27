@@ -1,0 +1,32 @@
+{
+  "manifest_version": 3,
+  "name": "Cedar Spells for Google Slides",
+  "version": "1.0.0",
+  "description": "Test extension to inject Cedar spells into Google Slides",
+  
+  "permissions": [
+    "activeTab"
+  ],
+  
+  "host_permissions": [
+    "https://docs.google.com/presentation/*",
+    "https://slides.google.com/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": [
+        "https://docs.google.com/presentation/*",
+        "https://slides.google.com/*"
+      ],
+      "js": ["content.js"],
+      "css": ["style.css"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Cedar Spells"
+  }
+}

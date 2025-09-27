@@ -1,0 +1,232 @@
+/**
+ * Cedar Spells Chrome Extension Styles
+ * RxJS-powered React components for Google Slides
+ */
+
+/* Cedar Spells Overlay */
+.cedar-spells-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: 999999;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+/* Backdrop */
+.cedar-backdrop {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  backdrop-filter: blur(4px);
+  cursor: pointer;
+}
+
+/* Radial Menu */
+.cedar-radial-menu {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: white;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.25);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  min-width: 240px;
+  animation: cedar-slide-in 0.3s ease-out;
+}
+
+/* Menu Header */
+.cedar-menu-header {
+  text-align: center;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.cedar-menu-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+
+.cedar-menu-header h3::before {
+  content: "✨";
+  font-size: 16px;
+}
+
+/* Menu Items */
+.cedar-menu-items {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.cedar-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+}
+
+.cedar-menu-item:hover {
+  background: #e3f2fd;
+  border-color: #2196f3;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(33, 150, 243, 0.15);
+}
+
+.cedar-menu-item:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(33, 150, 243, 0.2);
+}
+
+/* Icons */
+.cedar-icon {
+  color: #666;
+  flex-shrink: 0;
+}
+
+.cedar-menu-item:hover .cedar-icon {
+  color: #2196f3;
+}
+
+/* Labels */
+.cedar-label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #333;
+}
+
+.cedar-menu-item:hover .cedar-label {
+  color: #2196f3;
+}
+
+/* Feedback Messages */
+.cedar-feedback {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 1000000;
+  pointer-events: none;
+  animation: cedar-feedback-slide-in 0.3s ease-out;
+}
+
+.cedar-feedback-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #4caf50;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 10px;
+  box-shadow: 0 6px 20px rgba(76, 175, 80, 0.3);
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.cedar-feedback-icon {
+  font-size: 16px;
+}
+
+.cedar-feedback-text {
+  white-space: nowrap;
+}
+
+/* Animations */
+@keyframes cedar-slide-in {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+@keyframes cedar-feedback-slide-in {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .cedar-radial-menu {
+    background: #2d3748;
+    border-color: #4a5568;
+  }
+  
+  .cedar-menu-header {
+    border-bottom-color: #4a5568;
+  }
+  
+  .cedar-menu-header h3 {
+    color: #e2e8f0;
+  }
+  
+  .cedar-menu-item {
+    background: #4a5568;
+    border-color: #718096;
+  }
+  
+  .cedar-menu-item:hover {
+    background: #2b6cb0;
+    border-color: #3182ce;
+  }
+  
+  .cedar-label {
+    color: #e2e8f0;
+  }
+  
+  .cedar-icon {
+    color: #a0aec0;
+  }
+  
+  .cedar-menu-item:hover .cedar-icon,
+  .cedar-menu-item:hover .cedar-label {
+    color: #63b3ed;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  .cedar-radial-menu {
+    min-width: 200px;
+    padding: 20px;
+  }
+  
+  .cedar-menu-item {
+    padding: 10px 14px;
+  }
+  
+  .cedar-icon {
+    width: 18px;
+    height: 18px;
+  }
+  
+  .cedar-label {
+    font-size: 13px;
+  }
+}

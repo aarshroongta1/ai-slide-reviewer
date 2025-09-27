@@ -24,6 +24,10 @@ export const GOOGLE_APPS_SCRIPT_CONFIG = {
       updateSlidesState: 'updateSlidesState',
       getAIInsights: 'getAIInsights',
       showAITooltip: 'showAITooltip',
+      // Cedar Spell Integration Actions
+      triggerCedarSpell: 'triggerCedarSpell',
+      writeAIFeedback: 'writeAIFeedback',
+      executeCedarWorkflow: 'executeCedarWorkflow',
     },
   },
 };

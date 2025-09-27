@@ -1,0 +1,28 @@
+{
+  "name": "cedar-spells-extension",
+  "displayName": "Cedar Spells for Google Slides",
+  "version": "1.0.0",
+  "description": "Chrome extension that injects Cedar spells into Google Slides using RxJS",
+  "scripts": {
+    "build": "webpack --mode=production",
+    "dev": "webpack --mode=development --watch"
+  },
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rxjs": "^7.8.1",
+    "lucide-react": "^0.263.1"
+  },
+  "devDependencies": {
+    "@types/chrome": "^0.0.248",
+    "@types/react": "^18.2.15",
+    "@types/react-dom": "^18.2.7",
+    "typescript": "^5.0.2",
+    "webpack": "^5.88.0",
+    "webpack-cli": "^5.1.4",
+    "ts-loader": "^9.4.4",
+    "css-loader": "^6.8.1",
+    "style-loader": "^3.3.3",
+    "copy-webpack-plugin": "^11.0.0"
+  }
+}
