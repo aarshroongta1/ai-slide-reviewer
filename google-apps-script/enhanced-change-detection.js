@@ -34,7 +34,7 @@ function initializeEnhancedChangeTracking() {
  * Take a comprehensive snapshot of the entire presentation
  */
 function takePresentationSnapshot() {
-  const presentation = SlidesApp.getActivePresentation();
+  const presentation = getPresentation();
   const slides = presentation.getSlides();
   const snapshot = {
     presentationId: presentation.getId(),
@@ -834,10 +834,21 @@ function doPost(e) {
   }
 }
 
+// Configuration - Set your Google Slides presentation ID here
+const PRESENTATION_ID = 'YOUR_PRESENTATION_ID_HERE'; // Replace with your actual presentation ID
+
+// Helper function to get the presentation
+function getPresentation() {
+  if (PRESENTATION_ID === 'YOUR_PRESENTATION_ID_HERE') {
+    throw new Error('Please set PRESENTATION_ID in the script to your Google Slides presentation ID');
+  }
+  return SlidesApp.openById(PRESENTATION_ID);
+}
+
 // Legacy functions for backward compatibility
 function getPresentationInfo() {
   try {
-    const presentation = SlidesApp.getActivePresentation();
+    const presentation = getPresentation();
     return {
       success: true,
       id: presentation.getId(),
@@ -850,7 +861,8 @@ function getPresentationInfo() {
   } catch (error) {
     return {
       error: 'Failed to get presentation info',
-      details: error.toString()
+      details: error.toString(),
+      instruction: 'Please set PRESENTATION_ID in the script to your Google Slides presentation ID'
     };
   }
 }
