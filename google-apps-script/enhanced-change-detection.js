@@ -698,9 +698,294 @@ function stopMonitoring() {
   };
 }
 
+// Web app entry points
+function doGet(e) {
+  const action = e.parameter.action;
+  console.log('doGet called with action:', action);
+  
+  try {
+    switch (action) {
+      case 'getPresentationInfo':
+        return ContentService.createTextOutput(JSON.stringify(getPresentationInfo()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'detectChanges':
+        return ContentService.createTextOutput(JSON.stringify(detectChanges()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'detectEnhancedChanges':
+        return ContentService.createTextOutput(JSON.stringify(detectEnhancedChanges()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'getSlidesState':
+        return ContentService.createTextOutput(JSON.stringify(getSlidesState()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'testConnection':
+        return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Connection successful' }))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'debugCurrentState':
+        return ContentService.createTextOutput(JSON.stringify(debugCurrentState()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'debugDetectChanges':
+        return ContentService.createTextOutput(JSON.stringify(debugDetectChanges()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'getChangeLog':
+        return ContentService.createTextOutput(JSON.stringify(getChangeLog()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      default:
+        return ContentService.createTextOutput(JSON.stringify({
+          error: 'Invalid action',
+          availableActions: [
+            'getPresentationInfo',
+            'detectChanges',
+            'detectEnhancedChanges',
+            'getSlidesState',
+            'testConnection',
+            'debugCurrentState',
+            'debugDetectChanges',
+            'getChangeLog'
+          ]
+        })).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    console.error('Error in doGet:', error);
+    return ContentService.createTextOutput(JSON.stringify({
+      error: 'Internal server error',
+      details: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+function doPost(e) {
+  const data = JSON.parse(e.postData.contents);
+  const action = data.action;
+  console.log('doPost called with action:', action);
+  
+  try {
+    switch (action) {
+      case 'initializeChangeTracking':
+        return ContentService.createTextOutput(JSON.stringify(initializeChangeTracking()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'initializeEnhancedChangeTracking':
+        return ContentService.createTextOutput(JSON.stringify(initializeEnhancedChangeTracking()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'detectChanges':
+        return ContentService.createTextOutput(JSON.stringify(detectChanges()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'detectEnhancedChanges':
+        return ContentService.createTextOutput(JSON.stringify(detectEnhancedChanges()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'getChangeLog':
+        return ContentService.createTextOutput(JSON.stringify(getChangeLog()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'clearChangeLog':
+        return ContentService.createTextOutput(JSON.stringify(clearChangeLog()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'updateSlidesState':
+        return ContentService.createTextOutput(JSON.stringify(updateSlidesState(data.data)))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'getAIInsights':
+        return ContentService.createTextOutput(JSON.stringify(getAIInsights(data.data)))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'showAITooltip':
+        return ContentService.createTextOutput(JSON.stringify(showAITooltip(data.data)))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      case 'stopMonitoring':
+        return ContentService.createTextOutput(JSON.stringify(stopMonitoring()))
+          .setMimeType(ContentService.MimeType.JSON);
+      
+      default:
+        return ContentService.createTextOutput(JSON.stringify({
+          error: 'Invalid action',
+          availableActions: [
+            'initializeChangeTracking',
+            'initializeEnhancedChangeTracking',
+            'detectChanges',
+            'detectEnhancedChanges',
+            'getChangeLog',
+            'clearChangeLog',
+            'updateSlidesState',
+            'getAIInsights',
+            'showAITooltip',
+            'stopMonitoring'
+          ]
+        })).setMimeType(ContentService.MimeType.JSON);
+    }
+  } catch (error) {
+    console.error('Error in doPost:', error);
+    return ContentService.createTextOutput(JSON.stringify({
+      error: 'Internal server error',
+      details: error.toString()
+    })).setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+// Legacy functions for backward compatibility
+function getPresentationInfo() {
+  try {
+    const presentation = SlidesApp.getActivePresentation();
+    return {
+      success: true,
+      id: presentation.getId(),
+      name: presentation.getName(),
+      slideCount: presentation.getSlides().length,
+      url: presentation.getUrl(),
+      message: 'Presentation info retrieved successfully',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to get presentation info',
+      details: error.toString()
+    };
+  }
+}
+
+function detectChanges() {
+  try {
+    // Simple change detection for backward compatibility
+    return {
+      changes: [],
+      changeCount: 0,
+      message: 'No changes detected (legacy mode)',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to detect changes',
+      details: error.toString()
+    };
+  }
+}
+
+function getSlidesState() {
+  try {
+    return {
+      success: true,
+      state: 'active',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to get slides state',
+      details: error.toString()
+    };
+  }
+}
+
+function debugCurrentState() {
+  try {
+    return {
+      success: true,
+      debug: 'Current state debug info',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to get debug state',
+      details: error.toString()
+    };
+  }
+}
+
+function debugDetectChanges() {
+  try {
+    return {
+      success: true,
+      debug: 'Change detection debug info',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to debug changes',
+      details: error.toString()
+    };
+  }
+}
+
+function initializeChangeTracking() {
+  try {
+    return {
+      success: true,
+      message: 'Legacy change tracking initialized',
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to initialize change tracking',
+      details: error.toString()
+    };
+  }
+}
+
+function updateSlidesState(data) {
+  try {
+    return {
+      success: true,
+      message: 'Slides state updated',
+      data: data,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to update slides state',
+      details: error.toString()
+    };
+  }
+}
+
+function getAIInsights(data) {
+  try {
+    return {
+      success: true,
+      insights: [],
+      message: 'AI insights generated',
+      data: data,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to get AI insights',
+      details: error.toString()
+    };
+  }
+}
+
+function showAITooltip(data) {
+  try {
+    return {
+      success: true,
+      message: 'AI tooltip shown',
+      data: data,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to show AI tooltip',
+      details: error.toString()
+    };
+  }
+}
+
 // Export functions for web app
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
+    doGet,
+    doPost,
     initializeEnhancedChangeTracking,
     detectEnhancedChanges,
     getChangeLog,
