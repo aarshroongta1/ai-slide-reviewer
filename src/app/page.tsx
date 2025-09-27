@@ -3,7 +3,26 @@
 import { useState, useEffect } from 'react';
 import { useCedarState, useRegisterState } from 'cedar-os';
 import { FileText, Monitor, TrendingUp, Search } from 'lucide-react';
-import type { EnhancedSlideChange } from '@/types/enhanced-slide-changes';
+
+interface SlideChange {
+  id: string;
+  timestamp: Date;
+  type:
+    | 'text_change'
+    | 'shape_added'
+    | 'shape_removed'
+    | 'shape_moved'
+    | 'slide_added'
+    | 'slide_removed';
+  slideIndex: number;
+  details: {
+    oldValue?: string;
+    newValue?: string;
+    shapeId?: string;
+    shapeType?: string;
+    position?: { x: number; y: number };
+  };
+}
 
 interface SlideInsight {
   id: string;
@@ -34,7 +53,7 @@ export default function SlidesMonitor() {
   const [slides, setSlides] = useCedarState('slides');
 
   const [isConnected, setIsConnected] = useState(false);
-  const [recentChanges, setRecentChanges] = useState<EnhancedSlideChange[]>([]);
+  const [recentChanges, setRecentChanges] = useState<SlideChange[]>([]);
   const [activeInsights, setActiveInsights] = useState<SlideInsight[]>([]);
 
   // Connect to Google Slides monitoring
@@ -75,9 +94,8 @@ export default function SlidesMonitor() {
         const response = await fetch('/api/slides/changes');
 
         if (response.ok) {
-          const data = await response.json();
-          const changes: EnhancedSlideChange[] = data.changes || [];
-          console.log('📊 Received enhanced changes:', changes);
+          const changes: SlideChange[] = await response.json();
+          console.log('📊 Received changes:', changes);
           console.log('📈 Number of changes:', changes.length);
 
           if (changes.length > 0) {
@@ -123,7 +141,7 @@ export default function SlidesMonitor() {
 
   // Generate AI insight for a change
   const generateAIInsight = async (
-    change: EnhancedSlideChange
+    change: SlideChange
   ): Promise<SlideInsight | null> => {
     try {
       const response = await fetch('/api/ai/insight', {
@@ -147,47 +165,21 @@ export default function SlidesMonitor() {
       console.error('Failed to generate AI insight:', error);
     }
 
-    // Fallback insight based on enhanced change type
+    // Fallback insight
     return {
       id: `insight_${Date.now()}`,
       type: 'suggestion',
-      message: generateFallbackInsight(change),
+      message: `Change detected: ${change.type.replace('_', ' ')} on slide ${
+        change.slideIndex + 1
+      }`,
       slideIndex: change.slideIndex,
       confidence: 0.6,
       timestamp: new Date(),
     };
   };
 
-  // Generate fallback insight based on enhanced change type
-  const generateFallbackInsight = (change: EnhancedSlideChange): string => {
-    switch (change.changeType) {
-      case 'text_content_changed':
-        return `Text content updated on slide ${change.slideIndex + 1}. Consider reviewing for clarity and engagement.`;
-      case 'element_moved':
-        return `Element repositioned on slide ${change.slideIndex + 1}. Check alignment with other elements.`;
-      case 'element_resized':
-        return `Element resized on slide ${change.slideIndex + 1}. Ensure consistent sizing across slides.`;
-      case 'text_style_changed':
-        return `Text style modified on slide ${change.slideIndex + 1}. Maintain consistent typography.`;
-      case 'font_changed':
-        return `Font changed on slide ${change.slideIndex + 1}. Consider font consistency across presentation.`;
-      case 'color_changed':
-        return `Color updated on slide ${change.slideIndex + 1}. Ensure color scheme consistency.`;
-      case 'element_added':
-        return `New element added to slide ${change.slideIndex + 1}. Verify it enhances the slide's message.`;
-      case 'element_removed':
-        return `Element removed from slide ${change.slideIndex + 1}. Check if this affects slide completeness.`;
-      case 'slide_added':
-        return `New slide ${change.slideIndex + 1} added. Ensure it flows well with the presentation narrative.`;
-      case 'slide_removed':
-        return `Slide ${change.slideIndex + 1} removed. Verify this doesn't break presentation flow.`;
-      default:
-        return `Change detected on slide ${change.slideIndex + 1}. Review for potential improvements.`;
-    }
-  };
-
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white overflow-y-auto">
+    <div className="min-h-screen bg-gradient-to-br from-slate-900 to-slate-800 text-white">
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold mb-4">🤖 Slides AI Monitor</h1>
@@ -234,62 +226,18 @@ export default function SlidesMonitor() {
                 >
                   <div className="flex justify-between items-center">
                     <span className="text-sm font-medium">
-                      {change.changeType.replace(/_/g, ' ')} on Slide{' '}
+                      {change.type.replace('_', ' ')} on Slide{' '}
                       {change.slideIndex + 1}
                     </span>
                     <span className="text-xs text-slate-400">
                       {new Date(change.timestamp).toLocaleTimeString()}
                     </span>
                   </div>
-                  
-                  {/* Enhanced change details */}
-                  <div className="mt-2 space-y-1">
-                    <div className="text-xs text-slate-300">
-                      Element: {change.elementType} ({change.elementId.slice(0, 8)}...)
+                  {change.details.newValue && (
+                    <div className="mt-2 text-xs text-slate-300 truncate">
+                      &ldquo;{change.details.newValue}&rdquo;
                     </div>
-                    
-                    {/* Content changes */}
-                    {change.details.content && (
-                      <div className="text-xs text-slate-300">
-                        <div className="font-medium">Content:</div>
-                        <div className="truncate">
-                          "{change.details.content.newValue?.slice(0, 50)}..."
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Position changes */}
-                    {change.details.position && (
-                      <div className="text-xs text-slate-300">
-                        <div className="font-medium">Position:</div>
-                        <div>
-                          {change.details.position.oldPosition.x} → {change.details.position.newPosition.x}, 
-                          {change.details.position.oldPosition.y} → {change.details.position.newPosition.y}
-                        </div>
-                      </div>
-                    )}
-                    
-                    {/* Style changes */}
-                    {change.details.style && (
-                      <div className="text-xs text-slate-300">
-                        <div className="font-medium">Style:</div>
-                        <div>Font: {change.details.style.newStyle.fontSize}px</div>
-                        <div>Color: {change.details.style.newStyle.textColor}</div>
-                      </div>
-                    )}
-                    
-                    {/* Change severity indicator */}
-                    <div className="flex items-center gap-1 mt-1">
-                      <div className={`w-2 h-2 rounded-full ${
-                        change.metadata.changeSeverity === 'HIGH' ? 'bg-red-500' :
-                        change.metadata.changeSeverity === 'MEDIUM' ? 'bg-yellow-500' :
-                        'bg-green-500'
-                      }`} />
-                      <span className="text-xs text-slate-400">
-                        {change.metadata.changeSeverity} severity
-                      </span>
-                    </div>
-                  </div>
+                  )}
                 </div>
               ))}
             </div>

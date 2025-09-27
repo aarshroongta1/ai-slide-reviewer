@@ -4,31 +4,26 @@ export const GOOGLE_APPS_SCRIPT_CONFIG = {
   // You can find this in your Google Apps Script project URL
   WEB_APP_URL:
     process.env.GOOGLE_APPS_SCRIPT_URL ||
-    'https://script.google.com/macros/s/AKfycbwvj0-0uJ37xaTfYc2KYM_4Bn6nZViQP8e8maWRFZIrOLDTSzYIkFCJ4dpkj2brrzA/exec',
+    'https://script.google.com/macros/s/AKfycbwD_H7sumW6A-EkmNirJMwTviT9GROu8nz91VOaiMHjv8vqcSbjkX-LPM18ARhcLGYu9g/exec',
 
   // Available actions for the web app
   ACTIONS: {
     GET: {
       getPresentationInfo: 'getPresentationInfo',
       detectChanges: 'detectChanges',
-      detectEnhancedChanges: 'detectEnhancedChanges',
       getSlidesState: 'getSlidesState',
       testConnection: 'testConnection',
       debugCurrentState: 'debugCurrentState',
       debugDetectChanges: 'debugDetectChanges',
-      getChangeLog: 'getChangeLog',
     },
     POST: {
       initializeChangeTracking: 'initializeChangeTracking',
-      initializeEnhancedChangeTracking: 'initializeEnhancedChangeTracking',
       detectChanges: 'detectChanges',
-      detectEnhancedChanges: 'detectEnhancedChanges',
       getChangeLog: 'getChangeLog',
       clearChangeLog: 'clearChangeLog',
       updateSlidesState: 'updateSlidesState',
       getAIInsights: 'getAIInsights',
       showAITooltip: 'showAITooltip',
-      stopMonitoring: 'stopMonitoring',
     },
   },
 };

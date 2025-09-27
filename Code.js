@@ -698,6 +698,279 @@ function stopMonitoring() {
   };
 }
 
+/**
+ * Web App Handlers for Google Apps Script
+ */
+
+/**
+ * Handle GET requests to the web app
+ */
+function doGet(e) {
+  console.log('📡 Received GET request:', e);
+  
+  const action = e.parameter.action;
+  console.log('🎯 Action requested:', action);
+  
+  try {
+    let result;
+    
+    switch (action) {
+      case 'getPresentationInfo':
+        result = getPresentationInfo();
+        break;
+      case 'detectChanges':
+        result = detectEnhancedChanges();
+        break;
+      case 'getSlidesState':
+        result = getSlidesState();
+        break;
+      case 'testConnection':
+        result = testConnection();
+        break;
+      case 'debugCurrentState':
+        result = debugCurrentState();
+        break;
+      case 'debugDetectChanges':
+        result = debugDetectChanges();
+        break;
+      default:
+        result = {
+          error: 'Unknown action',
+          availableActions: [
+            'getPresentationInfo',
+            'detectChanges', 
+            'getSlidesState',
+            'testConnection',
+            'debugCurrentState',
+            'debugDetectChanges'
+          ]
+        };
+    }
+    
+    console.log('✅ Returning result:', result);
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    console.error('❌ Error in doGet:', error);
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        error: 'Internal server error',
+        message: error.toString(),
+        timestamp: new Date().toISOString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Handle POST requests to the web app
+ */
+function doPost(e) {
+  console.log('📡 Received POST request:', e);
+  
+  try {
+    const data = JSON.parse(e.postData.contents);
+    const action = data.action;
+    const requestData = data.data || {};
+    
+    console.log('🎯 Action requested:', action);
+    console.log('📋 Request data:', requestData);
+    
+    let result;
+    
+    switch (action) {
+      case 'initializeChangeTracking':
+        result = initializeEnhancedChangeTracking();
+        break;
+      case 'detectChanges':
+        result = detectEnhancedChanges();
+        break;
+      case 'getChangeLog':
+        result = getChangeLog();
+        break;
+      case 'clearChangeLog':
+        result = clearChangeLog();
+        break;
+      case 'updateSlidesState':
+        result = updateSlidesState(requestData);
+        break;
+      case 'getAIInsights':
+        result = getAIInsights(requestData);
+        break;
+      case 'showAITooltip':
+        result = showAITooltip(requestData);
+        break;
+      default:
+        result = {
+          error: 'Unknown action',
+          availableActions: [
+            'initializeChangeTracking',
+            'detectChanges',
+            'getChangeLog',
+            'clearChangeLog',
+            'updateSlidesState',
+            'getAIInsights',
+            'showAITooltip'
+          ]
+        };
+    }
+    
+    console.log('✅ Returning result:', result);
+    return ContentService
+      .createTextOutput(JSON.stringify(result))
+      .setMimeType(ContentService.MimeType.JSON);
+      
+  } catch (error) {
+    console.error('❌ Error in doPost:', error);
+    return ContentService
+      .createTextOutput(JSON.stringify({
+        error: 'Internal server error',
+        message: error.toString(),
+        timestamp: new Date().toISOString()
+      }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
+}
+
+/**
+ * Get basic presentation information
+ */
+function getPresentationInfo() {
+  try {
+    const presentation = SlidesApp.getActivePresentation();
+    return {
+      id: presentation.getId(),
+      name: presentation.getName(),
+      slideCount: presentation.getSlides().length,
+      url: presentation.getUrl(),
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to get presentation info',
+      message: error.toString(),
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+/**
+ * Get current slides state
+ */
+function getSlidesState() {
+  try {
+    const presentation = SlidesApp.getActivePresentation();
+    const slides = presentation.getSlides();
+    
+    return {
+      presentationId: presentation.getId(),
+      presentationName: presentation.getName(),
+      slideCount: slides.length,
+      isMonitoring: isMonitoring,
+      changeLogCount: changeLog.length,
+      timestamp: new Date().toISOString()
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to get slides state',
+      message: error.toString(),
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+/**
+ * Test connection to the web app
+ */
+function testConnection() {
+  return {
+    success: true,
+    message: 'Google Apps Script web app is running',
+    timestamp: new Date().toISOString(),
+    version: '1.0.0'
+  };
+}
+
+/**
+ * Debug current state
+ */
+function debugCurrentState() {
+  return {
+    isMonitoring: isMonitoring,
+    changeLogLength: changeLog.length,
+    previousSnapshotsCount: Object.keys(previousSnapshots).length,
+    timestamp: new Date().toISOString()
+  };
+}
+
+/**
+ * Debug change detection
+ */
+function debugDetectChanges() {
+  try {
+    const result = detectEnhancedChanges();
+    return {
+      ...result,
+      debug: {
+        isMonitoring: isMonitoring,
+        previousSnapshotsCount: Object.keys(previousSnapshots).length,
+        changeLogLength: changeLog.length
+      }
+    };
+  } catch (error) {
+    return {
+      error: 'Failed to debug change detection',
+      message: error.toString(),
+      timestamp: new Date().toISOString()
+    };
+  }
+}
+
+/**
+ * Update slides state (placeholder)
+ */
+function updateSlidesState(data) {
+  return {
+    success: true,
+    message: 'Slides state updated',
+    data: data,
+    timestamp: new Date().toISOString()
+  };
+}
+
+/**
+ * Get AI insights (placeholder)
+ */
+function getAIInsights(data) {
+  return {
+    success: true,
+    message: 'AI insights generated',
+    insights: [
+      {
+        type: 'suggestion',
+        message: 'Consider improving slide readability',
+        confidence: 0.8
+      }
+    ],
+    data: data,
+    timestamp: new Date().toISOString()
+  };
+}
+
+/**
+ * Show AI tooltip (placeholder)
+ */
+function showAITooltip(data) {
+  return {
+    success: true,
+    message: 'AI tooltip shown',
+    data: data,
+    timestamp: new Date().toISOString()
+  };
+}
+
 // Export functions for web app
 if (typeof module !== 'undefined' && module.exports) {
   module.exports = {
@@ -705,6 +978,8 @@ if (typeof module !== 'undefined' && module.exports) {
     detectEnhancedChanges,
     getChangeLog,
     clearChangeLog,
-    stopMonitoring
+    stopMonitoring,
+    doGet,
+    doPost
   };
 }
