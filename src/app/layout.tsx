@@ -31,11 +31,11 @@ function RootLayout({ children }: { children: ReactNode }) {
           messageRenderers={messageRenderers}
           voiceSettings={voiceSettings}
         >
-          <div className="relative h-screen flex flex-col bg-white dark:bg-gray-900">
+          <div className="relative min-h-screen flex flex-col bg-white dark:bg-gray-900">
             <Header onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-            <div className="relative flex-1 flex overflow-hidden">
+            <div className="relative flex-1 flex">
               <Sidebar isOpen={sidebarOpen} />
-              <main className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-950 p-2">
+              <main className="flex-1 flex flex-col bg-gray-50 dark:bg-gray-950 p-2 overflow-y-auto">
                 {children}
               </main>
             </div>
