@@ -4,7 +4,7 @@ export const GOOGLE_APPS_SCRIPT_CONFIG = {
   // You can find this in your Google Apps Script project URL
   WEB_APP_URL:
     process.env.GOOGLE_APPS_SCRIPT_URL ||
-    'https://script.google.com/macros/s/AKfycbyC_jHk1EaeAqNz93d1CjSOGDFeAqZsr_VDgfHo5TQucwn3Bq1p8AnqEMMnIkYXoIM/exec',
+    'https://script.google.com/macros/s/AKfycbwBqMjx6QEScKLKplbcNM9Riz3Rb2lIkUtFm1Qec7mmcEM7HUJ8seHSA2H3T73ehjk/exec',
 
   // Available actions for the web app
   ACTIONS: {
