@@ -10,7 +10,7 @@ let isMonitoring = false;
  * Initialize enhanced change tracking
  */
 function initializeEnhancedChangeTracking() {
-  console.log('🚀 Initializing enhanced change tracking...');
+  console.log("🚀 Initializing enhanced change tracking...");
   
   // Clear previous state
   previousSnapshots = {};
@@ -21,12 +21,12 @@ function initializeEnhancedChangeTracking() {
   const initialSnapshot = takePresentationSnapshot();
   previousSnapshots[initialSnapshot.timestamp] = initialSnapshot;
   
-  console.log('✅ Enhanced change tracking initialized');
+  console.log("✅ Enhanced change tracking initialized");
   return {
     success: true,
-    message: 'Enhanced change tracking initialized',
+    message: "Enhanced change tracking initialized",
     initialSnapshot: initialSnapshot,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -40,7 +40,7 @@ function takePresentationSnapshot() {
     presentationId: presentation.getId(),
     presentationName: presentation.getName(),
     slides: [],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
   
   slides.forEach((slide, slideIndex) => {
@@ -60,10 +60,10 @@ function takeSlideSnapshot(slide, slideIndex) {
     slideIndex: slideIndex,
     slideId: slide.getObjectId(),
     elements: [],
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
   
-  pageElements.forEach(element => {
+  pageElements.forEach((element) => {
     const elementSnapshot = takeElementSnapshot(element, slideIndex);
     slideSnapshot.elements.push(elementSnapshot);
   });
@@ -87,18 +87,18 @@ function takeElementSnapshot(element, slideIndex) {
       height: element.getHeight(),
       rotation: element.getRotation(),
       scaleX: element.getScaleX(),
-      scaleY: element.getScaleY()
+      scaleY: element.getScaleY(),
     },
     style: {},
-    content: '',
+    content: "",
     properties: {},
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
   
   // Extract content based on element type
   if (elementType === SlidesApp.PageElementType.SHAPE) {
     const shape = element.asShape();
-    snapshot.content = shape.getText ? shape.getText().asString() : '';
+    snapshot.content = shape.getText ? shape.getText().asString() : "";
     snapshot.style = extractShapeStyle(shape);
     snapshot.properties = extractShapeProperties(shape);
   } else if (elementType === SlidesApp.PageElementType.TABLE) {
@@ -127,27 +127,38 @@ function extractShapeStyle(shape) {
     if (textRange) {
       style.fontSize = textRange.getFontSize();
       style.fontFamily = textRange.getFontFamily();
-      style.fontWeight = textRange.getBold() ? 'BOLD' : 'NORMAL';
-      style.fontStyle = textRange.getItalic() ? 'ITALIC' : 'NORMAL';
-      style.textColor = textRange.getForegroundColor().asRgbColor().asHexString();
+      style.fontWeight = textRange.getBold() ? "BOLD" : "NORMAL";
+      style.fontStyle = textRange.getItalic() ? "ITALIC" : "NORMAL";
+      style.textColor = textRange
+        .getForegroundColor()
+        .asRgbColor()
+        .asHexString();
       
       // Background
       const background = shape.getFill();
       if (background) {
-        style.backgroundColor = background.getSolidColor().asRgbColor().asHexString();
+        style.backgroundColor = background
+          .getSolidColor()
+          .asRgbColor()
+          .asHexString();
         style.backgroundOpacity = background.getSolidColor().getAlpha();
       }
       
       // Border
       const border = shape.getBorder();
       if (border) {
-        style.borderColor = border.getLineFill().getSolidFill().getColor().asRgbColor().asHexString();
+        style.borderColor = border
+          .getLineFill()
+          .getSolidFill()
+          .getColor()
+          .asRgbColor()
+          .asHexString();
         style.borderWidth = border.getWeight();
         style.borderStyle = border.getDashStyle().toString();
       }
     }
   } catch (error) {
-    console.log('Error extracting shape style:', error);
+    console.log("Error extracting shape style:", error);
   }
   
   return style;
@@ -166,12 +177,18 @@ function extractShapeProperties(shape) {
     // Text alignment
     const textRange = shape.getText();
     if (textRange) {
-      properties.textAlignment = textRange.getTextStyle().getAlignment().toString();
-      properties.verticalAlignment = textRange.getTextStyle().getVerticalAlignment().toString();
+      properties.textAlignment = textRange
+        .getTextStyle()
+        .getAlignment()
+        .toString();
+      properties.verticalAlignment = textRange
+        .getTextStyle()
+        .getVerticalAlignment()
+        .toString();
       properties.lineSpacing = textRange.getTextStyle().getLineSpacing();
     }
   } catch (error) {
-    console.log('Error extracting shape properties:', error);
+    console.log("Error extracting shape properties:", error);
   }
   
   return properties;
@@ -196,7 +213,7 @@ function extractTableContent(table) {
       content.push(row);
     }
   } catch (error) {
-    console.log('Error extracting table content:', error);
+    console.log("Error extracting table content:", error);
   }
   
   return content;
@@ -212,7 +229,12 @@ function extractTableStyle(table) {
     // Table border
     const border = table.getBorder();
     if (border) {
-      style.borderColor = border.getLineFill().getSolidFill().getColor().asRgbColor().asHexString();
+      style.borderColor = border
+        .getLineFill()
+        .getSolidFill()
+        .getColor()
+        .asRgbColor()
+        .asHexString();
       style.borderWidth = border.getWeight();
     }
     
@@ -222,10 +244,13 @@ function extractTableStyle(table) {
     if (textRange) {
       style.fontSize = textRange.getFontSize();
       style.fontFamily = textRange.getFontFamily();
-      style.textColor = textRange.getForegroundColor().asRgbColor().asHexString();
+      style.textColor = textRange
+        .getForegroundColor()
+        .asRgbColor()
+        .asHexString();
     }
   } catch (error) {
-    console.log('Error extracting table style:', error);
+    console.log("Error extracting table style:", error);
   }
   
   return style;
@@ -245,7 +270,7 @@ function extractTableProperties(table) {
     const firstCell = table.getCell(0, 0);
     properties.cellPadding = firstCell.getPadding().getTop();
   } catch (error) {
-    console.log('Error extracting table properties:', error);
+    console.log("Error extracting table properties:", error);
   }
   
   return properties;
@@ -261,7 +286,7 @@ function extractImageStyle(image) {
     // Image doesn't have text styles, but might have effects
     // This would need to be implemented based on available APIs
   } catch (error) {
-    console.log('Error extracting image style:', error);
+    console.log("Error extracting image style:", error);
   }
   
   return style;
@@ -277,7 +302,7 @@ function extractImageProperties(image) {
     properties.imageUrl = image.getSourceUrl();
     // Add more image-specific properties as needed
   } catch (error) {
-    console.log('Error extracting image properties:', error);
+    console.log("Error extracting image properties:", error);
   }
   
   return properties;
@@ -288,10 +313,10 @@ function extractImageProperties(image) {
  */
 function detectEnhancedChanges() {
   if (!isMonitoring) {
-    return { error: 'Monitoring not initialized' };
+    return { error: "Monitoring not initialized" };
   }
   
-  console.log('🔍 Detecting enhanced changes...');
+  console.log("🔍 Detecting enhanced changes...");
   
   const currentSnapshot = takePresentationSnapshot();
   const previousSnapshot = getPreviousSnapshot();
@@ -299,7 +324,7 @@ function detectEnhancedChanges() {
   if (!previousSnapshot) {
     // Store current snapshot as previous
     previousSnapshots[currentSnapshot.timestamp] = currentSnapshot;
-    return { changes: [], message: 'No previous snapshot for comparison' };
+    return { changes: [], message: "No previous snapshot for comparison" };
   }
   
   const changes = compareSnapshots(previousSnapshot, currentSnapshot);
@@ -308,7 +333,7 @@ function detectEnhancedChanges() {
   previousSnapshots[currentSnapshot.timestamp] = currentSnapshot;
   
   // Add to change log
-  changes.forEach(change => {
+  changes.forEach((change) => {
     changeLog.push(change);
   });
   
@@ -316,7 +341,7 @@ function detectEnhancedChanges() {
   return {
     changes: changes,
     changeCount: changes.length,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -337,7 +362,11 @@ function compareSnapshots(previousSnapshot, currentSnapshot) {
     }
     
     // Compare elements in this slide
-    const elementChanges = compareSlideElements(prevSlide, currentSlide, slideIndex);
+    const elementChanges = compareSlideElements(
+      prevSlide,
+      currentSlide,
+      slideIndex
+    );
     changes.push(...elementChanges);
   });
   
@@ -362,32 +391,40 @@ function compareSlideElements(prevSlide, currentSlide, slideIndex) {
   const prevElements = {};
   const currentElements = {};
   
-  prevSlide.elements.forEach(element => {
+  prevSlide.elements.forEach((element) => {
     prevElements[element.id] = element;
   });
   
-  currentSlide.elements.forEach(element => {
+  currentSlide.elements.forEach((element) => {
     currentElements[element.id] = element;
   });
   
   // Check for removed elements
-  Object.keys(prevElements).forEach(elementId => {
+  Object.keys(prevElements).forEach((elementId) => {
     if (!currentElements[elementId]) {
-      changes.push(createElementRemovedChange(prevElements[elementId], slideIndex));
+      changes.push(
+        createElementRemovedChange(prevElements[elementId], slideIndex)
+      );
     }
   });
   
   // Check for added elements
-  Object.keys(currentElements).forEach(elementId => {
+  Object.keys(currentElements).forEach((elementId) => {
     if (!prevElements[elementId]) {
-      changes.push(createElementAddedChange(currentElements[elementId], slideIndex));
+      changes.push(
+        createElementAddedChange(currentElements[elementId], slideIndex)
+      );
     }
   });
   
   // Check for modified elements
-  Object.keys(currentElements).forEach(elementId => {
+  Object.keys(currentElements).forEach((elementId) => {
     if (prevElements[elementId]) {
-      const elementChanges = compareElements(prevElements[elementId], currentElements[elementId], slideIndex);
+      const elementChanges = compareElements(
+        prevElements[elementId],
+        currentElements[elementId],
+        slideIndex
+      );
       changes.push(...elementChanges);
     }
   });
@@ -418,7 +455,9 @@ function compareElements(prevElement, currentElement, slideIndex) {
   
   // Properties changes
   if (hasPropertiesChanged(prevElement.properties, currentElement.properties)) {
-    changes.push(createPropertiesChange(prevElement, currentElement, slideIndex));
+    changes.push(
+      createPropertiesChange(prevElement, currentElement, slideIndex)
+    );
   }
   
   return changes;
@@ -461,22 +500,22 @@ function createPositionChange(prevElement, currentElement, slideIndex) {
     id: `pos_${currentElement.id}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'element_moved',
+    changeType: "element_moved",
     elementId: currentElement.id,
     elementType: currentElement.type,
     details: {
       position: {
         oldPosition: prevElement.position,
-        newPosition: currentElement.position
-      }
+        newPosition: currentElement.position,
+      },
     },
     metadata: {
-      changeScope: 'ELEMENT',
-      changeSeverity: 'MEDIUM',
-      detectionMethod: 'POLLING',
+      changeScope: "ELEMENT",
+      changeSeverity: "MEDIUM",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -485,22 +524,22 @@ function createStyleChange(prevElement, currentElement, slideIndex) {
     id: `style_${currentElement.id}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'text_style_changed',
+    changeType: "text_style_changed",
     elementId: currentElement.id,
     elementType: currentElement.type,
     details: {
       style: {
         oldStyle: prevElement.style,
-        newStyle: currentElement.style
-      }
+        newStyle: currentElement.style,
+      },
     },
     metadata: {
-      changeScope: 'ELEMENT',
-      changeSeverity: 'LOW',
-      detectionMethod: 'POLLING',
+      changeScope: "ELEMENT",
+      changeSeverity: "LOW",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -509,7 +548,7 @@ function createContentChange(prevElement, currentElement, slideIndex) {
     id: `content_${currentElement.id}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'text_content_changed',
+    changeType: "text_content_changed",
     elementId: currentElement.id,
     elementType: currentElement.type,
     details: {
@@ -518,17 +557,17 @@ function createContentChange(prevElement, currentElement, slideIndex) {
         newValue: currentElement.content,
         textRange: {
           startIndex: 0,
-          endIndex: currentElement.content.length
-        }
-      }
+          endIndex: currentElement.content.length,
+        },
+      },
     },
     metadata: {
-      changeScope: 'ELEMENT',
-      changeSeverity: 'HIGH',
-      detectionMethod: 'POLLING',
+      changeScope: "ELEMENT",
+      changeSeverity: "HIGH",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -537,22 +576,22 @@ function createPropertiesChange(prevElement, currentElement, slideIndex) {
     id: `props_${currentElement.id}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'text_formatting_changed',
+    changeType: "text_formatting_changed",
     elementId: currentElement.id,
     elementType: currentElement.type,
     details: {
       properties: {
         oldProperties: prevElement.properties,
-        newProperties: currentElement.properties
-      }
+        newProperties: currentElement.properties,
+      },
     },
     metadata: {
-      changeScope: 'ELEMENT',
-      changeSeverity: 'MEDIUM',
-      detectionMethod: 'POLLING',
+      changeScope: "ELEMENT",
+      changeSeverity: "MEDIUM",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -561,21 +600,21 @@ function createElementAddedChange(element, slideIndex) {
     id: `add_${element.id}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'element_added',
+    changeType: "element_added",
     elementId: element.id,
     elementType: element.type,
     details: {
       properties: {
-        newProperties: element.properties
-      }
+        newProperties: element.properties,
+      },
     },
     metadata: {
-      changeScope: 'ELEMENT',
-      changeSeverity: 'HIGH',
-      detectionMethod: 'POLLING',
+      changeScope: "ELEMENT",
+      changeSeverity: "HIGH",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -584,21 +623,21 @@ function createElementRemovedChange(element, slideIndex) {
     id: `remove_${element.id}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'element_removed',
+    changeType: "element_removed",
     elementId: element.id,
     elementType: element.type,
     details: {
       properties: {
-        oldProperties: element.properties
-      }
+        oldProperties: element.properties,
+      },
     },
     metadata: {
-      changeScope: 'ELEMENT',
-      changeSeverity: 'HIGH',
-      detectionMethod: 'POLLING',
+      changeScope: "ELEMENT",
+      changeSeverity: "HIGH",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -607,23 +646,23 @@ function createSlideAddedChange(slide, slideIndex) {
     id: `slide_add_${slideIndex}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'slide_added',
+    changeType: "slide_added",
     elementId: slide.slideId,
-    elementType: 'SLIDE',
+    elementType: "SLIDE",
     details: {
       properties: {
         newProperties: {
-          elementCount: slide.elements.length
-        }
-      }
+          elementCount: slide.elements.length,
+        },
+      },
     },
     metadata: {
-      changeScope: 'SLIDE',
-      changeSeverity: 'HIGH',
-      detectionMethod: 'POLLING',
+      changeScope: "SLIDE",
+      changeSeverity: "HIGH",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -632,23 +671,23 @@ function createSlideRemovedChange(slide, slideIndex) {
     id: `slide_remove_${slideIndex}_${Date.now()}`,
     timestamp: new Date().toISOString(),
     slideIndex: slideIndex,
-    changeType: 'slide_removed',
+    changeType: "slide_removed",
     elementId: slide.slideId,
-    elementType: 'SLIDE',
+    elementType: "SLIDE",
     details: {
       properties: {
         oldProperties: {
-          elementCount: slide.elements.length
-        }
-      }
+          elementCount: slide.elements.length,
+        },
+      },
     },
     metadata: {
-      changeScope: 'SLIDE',
-      changeSeverity: 'HIGH',
-      detectionMethod: 'POLLING',
+      changeScope: "SLIDE",
+      changeSeverity: "HIGH",
+      detectionMethod: "POLLING",
       confidence: 1.0,
-      processingTime: 0
-    }
+      processingTime: 0,
+    },
   };
 }
 
@@ -670,7 +709,7 @@ function getChangeLog() {
   return {
     changes: changeLog,
     totalChanges: changeLog.length,
-    timestamp: new Date().toISOString()
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -681,8 +720,8 @@ function clearChangeLog() {
   changeLog = [];
   return {
     success: true,
-    message: 'Change log cleared',
-    timestamp: new Date().toISOString()
+    message: "Change log cleared",
+    timestamp: new Date().toISOString(),
   };
 }
 
@@ -693,144 +732,194 @@ function stopMonitoring() {
   isMonitoring = false;
   return {
     success: true,
-    message: 'Monitoring stopped',
-    timestamp: new Date().toISOString()
+    message: "Monitoring stopped",
+    timestamp: new Date().toISOString(),
   };
 }
 
 // Web app entry points
 function doGet(e) {
   const action = e.parameter.action;
-  console.log('doGet called with action:', action);
+  console.log("doGet called with action:", action);
   
   try {
     switch (action) {
-      case 'getPresentationInfo':
-        return ContentService.createTextOutput(JSON.stringify(getPresentationInfo()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'detectChanges':
-        return ContentService.createTextOutput(JSON.stringify(detectChanges()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'detectEnhancedChanges':
-        return ContentService.createTextOutput(JSON.stringify(detectEnhancedChanges()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'getSlidesState':
-        return ContentService.createTextOutput(JSON.stringify(getSlidesState()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'testConnection':
-        return ContentService.createTextOutput(JSON.stringify({ success: true, message: 'Connection successful' }))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'debugCurrentState':
-        return ContentService.createTextOutput(JSON.stringify(debugCurrentState()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'debugDetectChanges':
-        return ContentService.createTextOutput(JSON.stringify(debugDetectChanges()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'getChangeLog':
-        return ContentService.createTextOutput(JSON.stringify(getChangeLog()))
-          .setMimeType(ContentService.MimeType.JSON);
+      case "getPresentationInfo":
+        return ContentService.createTextOutput(
+          JSON.stringify(getPresentationInfo())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "getCurrentState":
+        return ContentService.createTextOutput(
+          JSON.stringify(getCurrentState())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "detectChanges":
+        return ContentService.createTextOutput(
+          JSON.stringify(detectChanges())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "detectEnhancedChanges":
+        return ContentService.createTextOutput(
+          JSON.stringify(detectEnhancedChanges())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "getSlidesState":
+        return ContentService.createTextOutput(
+          JSON.stringify(getSlidesState())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "testConnection":
+        return ContentService.createTextOutput(
+          JSON.stringify({ success: true, message: "Connection successful" })
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "debugCurrentState":
+        return ContentService.createTextOutput(
+          JSON.stringify(debugCurrentState())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "debugDetectChanges":
+        return ContentService.createTextOutput(
+          JSON.stringify(debugDetectChanges())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "getChangeLog":
+        return ContentService.createTextOutput(
+          JSON.stringify(getChangeLog())
+        ).setMimeType(ContentService.MimeType.JSON);
       
       default:
-        return ContentService.createTextOutput(JSON.stringify({
-          error: 'Invalid action',
+        return ContentService.createTextOutput(
+          JSON.stringify({
+            error: "Invalid action",
           availableActions: [
-            'getPresentationInfo',
-            'detectChanges',
-            'detectEnhancedChanges',
-            'getSlidesState',
-            'testConnection',
-            'debugCurrentState',
-            'debugDetectChanges',
-            'getChangeLog'
-          ]
-        })).setMimeType(ContentService.MimeType.JSON);
+              "getPresentationInfo",
+              "getCurrentState",
+              "detectChanges",
+              "detectEnhancedChanges",
+              "getSlidesState",
+              "testConnection",
+              "debugCurrentState",
+              "debugDetectChanges",
+              "getChangeLog",
+            ],
+          })
+        ).setMimeType(ContentService.MimeType.JSON);
     }
   } catch (error) {
-    console.error('Error in doGet:', error);
-    return ContentService.createTextOutput(JSON.stringify({
-      error: 'Internal server error',
-      details: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    console.error("Error in doGet:", error);
+    return ContentService.createTextOutput(
+      JSON.stringify({
+        error: "Internal server error",
+        details: error.toString(),
+      })
+    ).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
 function doPost(e) {
   const data = JSON.parse(e.postData.contents);
   const action = data.action;
-  console.log('doPost called with action:', action);
+  console.log("doPost called with action:", action);
   
   try {
     switch (action) {
-      case 'initializeChangeTracking':
-        return ContentService.createTextOutput(JSON.stringify(initializeChangeTracking()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'initializeEnhancedChangeTracking':
-        return ContentService.createTextOutput(JSON.stringify(initializeEnhancedChangeTracking()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'detectChanges':
-        return ContentService.createTextOutput(JSON.stringify(detectChanges()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'detectEnhancedChanges':
-        return ContentService.createTextOutput(JSON.stringify(detectEnhancedChanges()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'getChangeLog':
-        return ContentService.createTextOutput(JSON.stringify(getChangeLog()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'clearChangeLog':
-        return ContentService.createTextOutput(JSON.stringify(clearChangeLog()))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'updateSlidesState':
-        return ContentService.createTextOutput(JSON.stringify(updateSlidesState(data.data)))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'getAIInsights':
-        return ContentService.createTextOutput(JSON.stringify(getAIInsights(data.data)))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'showAITooltip':
-        return ContentService.createTextOutput(JSON.stringify(showAITooltip(data.data)))
-          .setMimeType(ContentService.MimeType.JSON);
-      
-      case 'stopMonitoring':
-        return ContentService.createTextOutput(JSON.stringify(stopMonitoring()))
-          .setMimeType(ContentService.MimeType.JSON);
+      case "initialize":
+        return ContentService.createTextOutput(
+          JSON.stringify(initializeEnhancedChangeTracking())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "initializeChangeTracking":
+        return ContentService.createTextOutput(
+          JSON.stringify(initializeChangeTracking())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "initializeEnhancedChangeTracking":
+        return ContentService.createTextOutput(
+          JSON.stringify(initializeEnhancedChangeTracking())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "detectChanges":
+        return ContentService.createTextOutput(
+          JSON.stringify(detectChanges())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "detectEnhancedChanges":
+        return ContentService.createTextOutput(
+          JSON.stringify(detectEnhancedChanges())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "getChangeLog":
+        return ContentService.createTextOutput(
+          JSON.stringify(getChangeLog())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "clearChangeLog":
+        return ContentService.createTextOutput(
+          JSON.stringify(clearChangeLog())
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "updateSlidesState":
+        return ContentService.createTextOutput(
+          JSON.stringify(updateSlidesState(data.data))
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "getSlideContentForAnalysis":
+        return ContentService.createTextOutput(
+          JSON.stringify(getSlideContentForAnalysis(data.data))
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "captureSlideImage":
+        return ContentService.createTextOutput(
+          JSON.stringify(captureSlideImage(data.data))
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "getAIInsights":
+        return ContentService.createTextOutput(
+          JSON.stringify(getAIInsights(data.data))
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "showAITooltip":
+        return ContentService.createTextOutput(
+          JSON.stringify(showAITooltip(data.data))
+        ).setMimeType(ContentService.MimeType.JSON);
+
+      case "stopMonitoring":
+        return ContentService.createTextOutput(
+          JSON.stringify(stopMonitoring())
+        ).setMimeType(ContentService.MimeType.JSON);
       
       default:
-        return ContentService.createTextOutput(JSON.stringify({
-          error: 'Invalid action',
+        return ContentService.createTextOutput(
+          JSON.stringify({
+            error: "Invalid action",
           availableActions: [
-            'initializeChangeTracking',
-            'initializeEnhancedChangeTracking',
-            'detectChanges',
-            'detectEnhancedChanges',
-            'getChangeLog',
-            'clearChangeLog',
-            'updateSlidesState',
-            'getAIInsights',
-            'showAITooltip',
-            'stopMonitoring'
-          ]
-        })).setMimeType(ContentService.MimeType.JSON);
+              "initialize",
+              "initializeChangeTracking",
+              "initializeEnhancedChangeTracking",
+              "detectChanges",
+              "detectEnhancedChanges",
+              "getChangeLog",
+              "clearChangeLog",
+              "updateSlidesState",
+              "getSlideContentForAnalysis",
+              "captureSlideImage",
+              "getAIInsights",
+              "showAITooltip",
+              "stopMonitoring",
+            ],
+          })
+        ).setMimeType(ContentService.MimeType.JSON);
     }
   } catch (error) {
-    console.error('Error in doPost:', error);
-    return ContentService.createTextOutput(JSON.stringify({
-      error: 'Internal server error',
-      details: error.toString()
-    })).setMimeType(ContentService.MimeType.JSON);
+    console.error("Error in doPost:", error);
+    return ContentService.createTextOutput(
+      JSON.stringify({
+        error: "Internal server error",
+        details: error.toString(),
+      })
+    ).setMimeType(ContentService.MimeType.JSON);
   }
 }
 
@@ -844,13 +933,61 @@ function getPresentationInfo() {
       name: presentation.getName(),
       slideCount: presentation.getSlides().length,
       url: presentation.getUrl(),
-      message: 'Presentation info retrieved successfully',
-      timestamp: new Date().toISOString()
+      message: "Presentation info retrieved successfully",
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to get presentation info',
-      details: error.toString()
+      error: "Failed to get presentation info",
+      details: error.toString(),
+    };
+  }
+}
+
+function getCurrentState() {
+  try {
+    console.log("📊 Getting current state...");
+
+    const presentation = SlidesApp.getActivePresentation();
+    const slides = presentation.getSlides();
+
+    const currentState = {
+      success: true,
+      presentation: {
+        id: presentation.getId(),
+        name: presentation.getName(),
+        url: presentation.getUrl(),
+        slideCount: slides.length,
+      },
+      slides: slides.map((slide, index) => ({
+        slideIndex: index,
+        slideId: slide.getObjectId(),
+        elements: slide.getPageElements().map((element) => ({
+          elementId: element.getObjectId(),
+          type: element.getPageElementType().toString(),
+          position: {
+            left: element.getLeft(),
+            top: element.getTop(),
+            width: element.getWidth(),
+            height: element.getHeight(),
+          },
+        })),
+      })),
+      monitoring: {
+        isActive: isMonitoring,
+        snapshotCount: Object.keys(previousSnapshots).length,
+        changeCount: changeLog.length,
+      },
+      timestamp: new Date().toISOString(),
+    };
+
+    console.log("✅ Current state retrieved:", currentState);
+    return currentState;
+  } catch (error) {
+    return {
+      success: false,
+      error: "Failed to get current state",
+      details: error.toString(),
     };
   }
 }
@@ -861,13 +998,13 @@ function detectChanges() {
     return {
       changes: [],
       changeCount: 0,
-      message: 'No changes detected (legacy mode)',
-      timestamp: new Date().toISOString()
+      message: "No changes detected (legacy mode)",
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to detect changes',
-      details: error.toString()
+      error: "Failed to detect changes",
+      details: error.toString(),
     };
   }
 }
@@ -876,13 +1013,279 @@ function getSlidesState() {
   try {
     return {
       success: true,
-      state: 'active',
-      timestamp: new Date().toISOString()
+      state: "active",
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to get slides state',
-      details: error.toString()
+      error: "Failed to get slides state",
+      details: error.toString(),
+    };
+  }
+}
+
+function getSlideContentForAnalysis(data) {
+  try {
+    console.log("📊 Getting slide content for analysis...", data);
+
+    const presentation = SlidesApp.getActivePresentation();
+    const slides = presentation.getSlides();
+    const slideIndex = data.slideIndex || 0;
+
+    if (slideIndex >= slides.length) {
+      return {
+        success: false,
+        error: "Slide index out of range",
+        slideIndex: slideIndex,
+        totalSlides: slides.length,
+      };
+    }
+
+    const slide = slides[slideIndex];
+    const elements = slide.getPageElements();
+
+    const slideContent = {
+      slideIndex: slideIndex,
+      slideId: slide.getObjectId(),
+      textContent: [],
+      imageElements: [],
+      tableElements: [],
+      shapeElements: [],
+      videoElements: [],
+    };
+
+    // Extract text content
+    elements.forEach((element, index) => {
+      const elementType = element.getPageElementType();
+
+      if (elementType === SlidesApp.PageElementType.SHAPE) {
+        const shape = element.asShape();
+        if (shape.getText && shape.getText().asString().trim()) {
+          const textContent = {
+            elementIndex: index,
+            elementId: element.getObjectId(),
+            text: shape.getText().asString(),
+            position: {
+              left: element.getLeft(),
+              top: element.getTop(),
+              width: element.getWidth(),
+              height: element.getHeight(),
+            },
+            // Basic styling only - using confirmed working methods
+            styling: {
+              fontSize: shape.getText().getTextStyle().getFontSize(),
+              fontFamily: shape.getText().getTextStyle().getFontFamily(),
+            },
+          };
+          slideContent.textContent.push(textContent);
+        }
+        slideContent.shapeElements.push({
+          elementIndex: index,
+          elementId: element.getObjectId(),
+          type: "shape",
+          position: {
+            left: element.getLeft(),
+            top: element.getTop(),
+            width: element.getWidth(),
+            height: element.getHeight(),
+          },
+        });
+      } else if (elementType === SlidesApp.PageElementType.IMAGE) {
+        slideContent.imageElements.push({
+          elementIndex: index,
+          elementId: element.getObjectId(),
+          position: {
+            left: element.getLeft(),
+            top: element.getTop(),
+            width: element.getWidth(),
+            height: element.getHeight(),
+          },
+        });
+      } else if (elementType === SlidesApp.PageElementType.TABLE) {
+        slideContent.tableElements.push({
+          elementIndex: index,
+          elementId: element.getObjectId(),
+          position: {
+            left: element.getLeft(),
+            top: element.getTop(),
+            width: element.getWidth(),
+            height: element.getHeight(),
+          },
+        });
+      } else if (elementType === SlidesApp.PageElementType.VIDEO) {
+        slideContent.videoElements.push({
+          elementIndex: index,
+          elementId: element.getObjectId(),
+          position: {
+            left: element.getLeft(),
+            top: element.getTop(),
+            width: element.getWidth(),
+            height: element.getHeight(),
+          },
+        });
+      }
+    });
+
+    console.log("✅ Slide content extracted:", {
+      slideIndex: slideIndex,
+      textBlocks: slideContent.textContent.length,
+      images: slideContent.imageElements.length,
+      tables: slideContent.tableElements.length,
+      shapes: slideContent.shapeElements.length,
+      videos: slideContent.videoElements.length,
+    });
+
+    return {
+      success: true,
+      slideContent: slideContent,
+      summary: {
+        slideIndex: slideIndex,
+        totalElements: elements.length,
+        textBlocks: slideContent.textContent.length,
+        images: slideContent.imageElements.length,
+        tables: slideContent.tableElements.length,
+        shapes: slideContent.shapeElements.length,
+        videos: slideContent.videoElements.length,
+      },
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: "Failed to get slide content",
+      details: error.toString(),
+    };
+  }
+}
+
+function captureSlideImage(data) {
+  try {
+    console.log("📸 Capturing slide image...", data);
+
+    const presentation = SlidesApp.getActivePresentation();
+    const slides = presentation.getSlides();
+    const slideIndex = data.slideIndex || 0;
+
+    if (slideIndex >= slides.length) {
+      return {
+        success: false,
+        error: "Slide index out of range",
+        slideIndex: slideIndex,
+        totalSlides: slides.length,
+      };
+    }
+
+    const slide = slides[slideIndex];
+
+    // Note: Direct image capture from Google Slides is not possible via Apps Script
+    // This is a limitation of the Google Slides API
+    // We can only capture metadata about the slide
+
+    const slideMetadata = {
+      slideIndex: slideIndex,
+      slideId: slide.getObjectId(),
+      slideName: `Slide ${slideIndex + 1}`,
+      elementCount: slide.getPageElements().length,
+      slideSize: {
+        width: presentation.getPageSize().getWidth(),
+        height: presentation.getPageSize().getHeight(),
+      },
+      elements: slide.getPageElements().map((element, index) => {
+        const elementData = {
+          elementIndex: index,
+          elementId: element.getObjectId(),
+          type: element.getPageElementType().toString(),
+          position: {
+            left: element.getLeft(),
+            top: element.getTop(),
+            width: element.getWidth(),
+            height: element.getHeight(),
+          },
+        };
+
+        // Add detailed styling information based on element type
+        try {
+          if (
+            element.getPageElementType() === SlidesApp.PageElementType.SHAPE
+          ) {
+            const shape = element.asShape();
+            elementData.shapeInfo = {
+              borderColor: shape.getBorder().getLineColor
+                ? shape.getBorder().getLineColor().getColor()
+                : null,
+              borderWeight: shape.getBorder().getBorderWeight(),
+            };
+
+            // Text styling if shape contains text
+            if (shape.getText && shape.getText().asString().trim()) {
+              const text = shape.getText();
+              elementData.textInfo = {
+                content: text.asString(),
+                fontSize: text.getTextStyle().getFontSize(),
+                fontFamily: text.getTextStyle().getFontFamily(),
+                fontWeight: text.getTextStyle().isBold() ? "bold" : "normal",
+                fontStyle: text.getTextStyle().isItalic() ? "italic" : "normal",
+                textColor: text.getTextStyle().getForegroundColorObject()
+                  ? text.getTextStyle().getForegroundColorObject().getColor()
+                  : null,
+              };
+            }
+          } else if (
+            element.getPageElementType() === SlidesApp.PageElementType.IMAGE
+          ) {
+            const image = element.asShape();
+            elementData.imageInfo = {
+              fillColor: image.getFill().getSolidColor
+                ? image.getFill().getSolidColor().getColor()
+                : null,
+              borderColor: image.getBorder().getLineColor
+                ? image.getBorder().getLineColor().getColor()
+                : null,
+              borderWeight: image.getBorder().getBorderWeight(),
+            };
+          } else if (
+            element.getPageElementType() === SlidesApp.PageElementType.TABLE
+          ) {
+            const table = element.asShape();
+            elementData.tableInfo = {
+              fillColor: table.getFill().getSolidColor
+                ? table.getFill().getSolidColor().getColor()
+                : null,
+              borderColor: table.getBorder().getLineColor
+                ? table.getBorder().getLineColor().getColor()
+                : null,
+              borderWeight: table.getBorder().getBorderWeight(),
+            };
+          }
+        } catch (error) {
+          // If we can't get styling info, continue without it
+          elementData.stylingError = error.toString();
+        }
+
+        return elementData;
+      }),
+      // Note: Actual image data would require external integration
+      imageData: null,
+      imageUrl: null,
+    };
+
+    console.log("✅ Slide metadata captured:", {
+      slideIndex: slideIndex,
+      elementCount: slideMetadata.elementCount,
+      slideSize: slideMetadata.slideSize,
+    });
+
+    return {
+      success: true,
+      slideMetadata: slideMetadata,
+      note: "Direct image capture not available via Google Apps Script. Metadata provided instead.",
+      timestamp: new Date().toISOString(),
+    };
+  } catch (error) {
+    return {
+      success: false,
+      error: "Failed to capture slide image",
+      details: error.toString(),
     };
   }
 }
@@ -891,13 +1294,13 @@ function debugCurrentState() {
   try {
     return {
       success: true,
-      debug: 'Current state debug info',
-      timestamp: new Date().toISOString()
+      debug: "Current state debug info",
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to get debug state',
-      details: error.toString()
+      error: "Failed to get debug state",
+      details: error.toString(),
     };
   }
 }
@@ -906,13 +1309,13 @@ function debugDetectChanges() {
   try {
     return {
       success: true,
-      debug: 'Change detection debug info',
-      timestamp: new Date().toISOString()
+      debug: "Change detection debug info",
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to debug changes',
-      details: error.toString()
+      error: "Failed to debug changes",
+      details: error.toString(),
     };
   }
 }
@@ -921,13 +1324,13 @@ function initializeChangeTracking() {
   try {
     return {
       success: true,
-      message: 'Legacy change tracking initialized',
-      timestamp: new Date().toISOString()
+      message: "Legacy change tracking initialized",
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to initialize change tracking',
-      details: error.toString()
+      error: "Failed to initialize change tracking",
+      details: error.toString(),
     };
   }
 }
@@ -936,14 +1339,14 @@ function updateSlidesState(data) {
   try {
     return {
       success: true,
-      message: 'Slides state updated',
+      message: "Slides state updated",
       data: data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to update slides state',
-      details: error.toString()
+      error: "Failed to update slides state",
+      details: error.toString(),
     };
   }
 }
@@ -953,14 +1356,14 @@ function getAIInsights(data) {
     return {
       success: true,
       insights: [],
-      message: 'AI insights generated',
+      message: "AI insights generated",
       data: data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to get AI insights',
-      details: error.toString()
+      error: "Failed to get AI insights",
+      details: error.toString(),
     };
   }
 }
@@ -969,20 +1372,20 @@ function showAITooltip(data) {
   try {
     return {
       success: true,
-      message: 'AI tooltip shown',
+      message: "AI tooltip shown",
       data: data,
-      timestamp: new Date().toISOString()
+      timestamp: new Date().toISOString(),
     };
   } catch (error) {
     return {
-      error: 'Failed to show AI tooltip',
-      details: error.toString()
+      error: "Failed to show AI tooltip",
+      details: error.toString(),
     };
   }
 }
 
 // Export functions for web app
-if (typeof module !== 'undefined' && module.exports) {
+if (typeof module !== "undefined" && module.exports) {
   module.exports = {
     doGet,
     doPost,
@@ -990,6 +1393,6 @@ if (typeof module !== 'undefined' && module.exports) {
     detectEnhancedChanges,
     getChangeLog,
     clearChangeLog,
-    stopMonitoring
+    stopMonitoring,
   };
 }

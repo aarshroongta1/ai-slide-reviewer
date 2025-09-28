@@ -6,7 +6,11 @@
     "dev": "next dev --turbopack",
     "build": "next build --turbopack",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "start:all": "./start-services.sh",
+    "start:frontend": "next dev --turbopack",
+    "start:backend": "cd mastra-backend && npm run dev",
+    "start:slide-ai": "cd mastra/slide-ai && npm run dev"
   },
   "dependencies": {
     "@google-cloud/local-auth": "^3.0.1",

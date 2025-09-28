@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <base target="_top" />
+    <style>
+      body {
+        font-family: "Google Sans", Arial, sans-serif;
+        margin: 0;
+        padding: 16px;
+        background-color: #f8f9fa;
+      }
+
+      .header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 16px;
+        margin: -16px -16px 16px -16px;
+        border-radius: 0 0 8px 8px;
+      }
+
+      .header h2 {
+        margin: 0;
+        font-size: 18px;
+        font-weight: 500;
+      }
+
+      .slide-info {
+        background: white;
+        padding: 12px;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .slide-info h3 {
+        margin: 0 0 8px 0;
+        color: #333;
+        font-size: 14px;
+      }
+
+      .slide-info p {
+        margin: 4px 0;
+        color: #666;
+        font-size: 12px;
+      }
+
+      .content-preview {
+        background: #f1f3f4;
+        padding: 8px;
+        border-radius: 4px;
+        font-size: 11px;
+        color: #555;
+        max-height: 60px;
+        overflow-y: auto;
+        margin-top: 8px;
+      }
+
+      .questions-section {
+        background: white;
+        padding: 16px;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+      }
+
+      .questions-section h3 {
+        margin: 0 0 12px 0;
+        color: #333;
+        font-size: 14px;
+      }
+
+      .question {
+        background: #f8f9fa;
+        padding: 10px;
+        margin: 8px 0;
+        border-radius: 6px;
+        border-left: 3px solid #667eea;
+        font-size: 12px;
+        line-height: 1.4;
+      }
+
+      .question-number {
+        font-weight: 600;
+        color: #667eea;
+        margin-right: 6px;
+      }
+
+      .loading {
+        text-align: center;
+        padding: 20px;
+        color: #666;
+      }
+
+      .error {
+        background: #ffebee;
+        color: #c62828;
+        padding: 12px;
+        border-radius: 6px;
+        font-size: 12px;
+      }
+
+      .refresh-btn {
+        background: #667eea;
+        color: white;
+        border: none;
+        padding: 8px 16px;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 12px;
+        margin-top: 12px;
+        width: 100%;
+      }
+
+      .refresh-btn:hover {
+        background: #5a6fd8;
+      }
+
+      .refresh-btn:disabled {
+        background: #ccc;
+        cursor: not-allowed;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="header">
+      <h2>🤖 AI Slide QnA</h2>
+    </div>
+
+    <div class="slide-info">
+      <h3>Current Slide</h3>
+      <p id="slide-number">Loading...</p>
+      <p id="slide-content-length">Content: Loading...</p>
+      <div id="content-preview" class="content-preview" style="display: none">
+        <div id="content-text"></div>
+      </div>
+    </div>
+
+    <div class="questions-section">
+      <h3>Generated Questions</h3>
+      <div id="questions-container">
+        <div class="loading">Analyzing slide content...</div>
+      </div>
+      <button
+        id="refresh-btn"
+        class="refresh-btn"
+        onclick="analyzeCurrentSlide()"
+      >
+        🔄 Refresh Analysis
+      </button>
+    </div>
+
+    <script>
+      // Global variables
+      let currentSlideIndex = -1;
+      let currentSlideContent = "";
+
+      // Initialize the sidebar
+      function initializeSidebar() {
+        analyzeCurrentSlide();
+      }
+
+      // Analyze the current slide
+      function analyzeCurrentSlide() {
+        const refreshBtn = document.getElementById("refresh-btn");
+        const questionsContainer = document.getElementById(
+          "questions-container"
+        );
+
+        // Show loading state
+        refreshBtn.disabled = true;
+        refreshBtn.textContent = "🔄 Analyzing...";
+        questionsContainer.innerHTML =
+          '<div class="loading">Analyzing slide content...</div>';
+
+        // Get slide content
+        google.script.run
+          .withSuccessHandler(onSlideContentReceived)
+          .withFailureHandler(onError)
+          .getCurrentSlideContent();
+      }
+
+      // Handle slide content response
+      function onSlideContentReceived(slideData) {
+        if (!slideData.success) {
+          onError(slideData.error);
+          return;
+        }
+
+        // Update slide info
+        currentSlideIndex = slideData.slideIndex;
+        currentSlideContent = slideData.slideContent;
+
+        document.getElementById("slide-number").textContent = `Slide ${
+          slideData.slideIndex + 1
+        }`;
+        document.getElementById(
+          "slide-content-length"
+        ).textContent = `Content: ${slideData.textLength} characters`;
+
+        // Show content preview if available
+        if (
+          slideData.slideContent &&
+          slideData.slideContent.trim().length > 0
+        ) {
+          document.getElementById("content-text").textContent =
+            slideData.slideContent.substring(0, 200) +
+            (slideData.slideContent.length > 200 ? "..." : "");
+          document.getElementById("content-preview").style.display = "block";
+        }
+
+        // Analyze for questions
+        google.script.run
+          .withSuccessHandler(onQuestionsReceived)
+          .withFailureHandler(onError)
+          .analyzeSlideForQuestions(slideData);
+      }
+
+      // Handle questions response
+      function onQuestionsReceived(analysis) {
+        const questionsContainer = document.getElementById(
+          "questions-container"
+        );
+        const refreshBtn = document.getElementById("refresh-btn");
+
+        if (!analysis.success) {
+          onError(analysis.error);
+          return;
+        }
+
+        // Display questions
+        let questionsHTML = "";
+        analysis.questions.forEach((question, index) => {
+          questionsHTML += `
+          <div class="question">
+            <span class="question-number">${index + 1}.</span>
+            ${question}
+          </div>
+        `;
+        });
+
+        questionsContainer.innerHTML = questionsHTML;
+
+        // Reset button
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "🔄 Refresh Analysis";
+      }
+
+      // Handle errors
+      function onError(error) {
+        const questionsContainer = document.getElementById(
+          "questions-container"
+        );
+        const refreshBtn = document.getElementById("refresh-btn");
+
+        questionsContainer.innerHTML = `
+        <div class="error">
+          <strong>Error:</strong> ${error || "Unknown error occurred"}
+        </div>
+      `;
+
+        refreshBtn.disabled = false;
+        refreshBtn.textContent = "🔄 Refresh Analysis";
+      }
+
+      // Initialize when page loads
+      document.addEventListener("DOMContentLoaded", initializeSidebar);
+    </script>
+  </body>
+</html>
